@@ -2,10 +2,8 @@ require_relative 'spec_helper'
 
 describe Contact do
 	before :all do
-		ContactList.new
-		ContactList.clear
 		@bob = Contact.create("bob", "bob@mail")
-		Contact.close
+		#Contact.close
 	end
 	it "bob's name should be bob" do
 	  @bob.name == "bob"
@@ -27,3 +25,5 @@ describe Contact do
 		Contact.show(0) == ["bob", "bob@mail"]
 	end
 end
+
+#TODO Create a different context with reading from a file

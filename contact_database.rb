@@ -14,4 +14,5 @@ class ContactsDatabase
       end
     end
 	end
+
 end

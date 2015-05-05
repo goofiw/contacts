@@ -9,6 +9,7 @@ class ContactList
   def initialize
   	if !@@list_initialized
   	  @@contacts = ContactsDatabase.load_contacts
+  	  @@list_initialized = true
     else 
     	puts "list already initialized"
     end
@@ -16,13 +17,15 @@ class ContactList
   class << self
 	  def add(contact)
 	  	@@contacts << [contact.name, contact.email]
+	  	save
 	  end
 
 	  def contacts
+	  	self.new if !@@list_initialized
 	  	@@contacts
 	  end
 
-	  def close
+	  def save
 	  	ContactsDatabase.save_contacts(@@contacts)
 	  end
 

@@ -1,3 +1,4 @@
+require_relative 'contact_list'
 class Contact
  
   attr_accessor :name, :email
@@ -5,6 +6,7 @@ class Contact
   def initialize(name, email)
     @name = name
     @email = email
+    ContactList.new
   end
  
   def to_s
@@ -15,12 +17,17 @@ class Contact
   class << self
     def create(name, email)
       # TODO: Will initialize a contact as well as add it to the list of contacts
+
       ContactList.contacts.each do |contact|
         return nil if contact.include?(email)
       end
       john_doe = Contact.new(name, email)
       ContactList.add(john_doe)
-      john_doe
+      ContactList.contacts.length - 1
+    end
+
+    def help
+      open("help.txt", 'r').readlines
     end
  
     def find(index)
@@ -30,7 +37,7 @@ class Contact
       end
     end
  
-    def all
+    def list
       # TODO: Return the list of contacts, as is
       ContactList.contacts
     end
