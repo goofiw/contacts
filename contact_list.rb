@@ -8,16 +8,23 @@ class ContactList
   
   def initialize
   	if !@@list_initialized
-  	  @@contacts = ContactsDatabase.load_contacts
-  	  @@list_initialized = true
+  		#puts "contacts list initializing"
+  		@@list_initialized = true
+  	  ContactsDatabase.load_contacts.each { |contact_arr| @@contacts << Contact.new(contact_arr) }
+  	  
     else 
-    	puts "list already initialized"
+    	#puts "list already initialized"
     end
   end
   class << self
 	  def add(contact)
-	  	@@contacts << [contact.name, contact.email]
+	  	@@contacts << contact
 	  	save
+	  end
+
+	  def update(id, phone_numbers)
+       @@contacts[id].phone_numbers = phone_numbers
+       save
 	  end
 
 	  def contacts

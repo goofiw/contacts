@@ -1,28 +1,35 @@
 require_relative 'spec_helper'
 
+
+
+#JUST FOR PRACTICE
+#
+#
 describe Contact do
 	before :all do
-		@bob = Contact.create("bob", "bob@mail")
+		ContactList.clear
+		@bob = Contact.create({name: "bob", email: "bob@mail.com"})
 		#Contact.close
 	end
-	it "bob's name should be bob" do
-	  @bob.name == "bob"
+	it "seeding bob's id and calling name name should be bob" do
+		puts @bob.inspect
+	  expect(Contact.find(@bob).name).to eql "bob"
 	end
 		
-	it "bob's email shoud be bob@mail" do
-		@bob.email == "bob@mail"
+	it "seeding bob's id and calling email bob's email shoud be bob@mail.com" do
+		expect(Contact.find(@bob).email).to eql "bob@mail.com"
 	end
 
 	it "shoudl return bob" do
-		Contact.find(0) == ["bob", "bob@mail"]
+		expect(Contact.find(0)).to eql  ["bob", "bob@mail.com"]
 	end
 
-	it "Should return a list of all contacts" do
-		Contact.all == ["bob", "bob@mail"]
+	it "#list Should return a list of all contacts" do
+		expect(Contact.list).to eql ["bob", "bob@mail.com"]
 	end
 
 	it "Should show the contact when given an ID" do
-		Contact.show(0) == ["bob", "bob@mail"]
+		expect(Contact.show(0)).to eql ["bob", "bob@mail.com"]
 	end
 end
 

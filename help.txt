@@ -3,3 +3,4 @@ Here is a list of available commands:
     list - List all contacts
     show - Show a contact
     find - Find a contact
+    add_num - adds a number to the specificed contact id
