@@ -54,8 +54,6 @@ class Contact
       #end
     end
 
-
-
     def help
       puts open("help.txt", 'r').readlines
     end
@@ -86,8 +84,7 @@ class Contact
     def clear
       ContactList.clear
     end
-
-    
+ 
   end
  
 end

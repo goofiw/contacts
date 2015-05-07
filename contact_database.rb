@@ -1,6 +1,7 @@
 ## TODO: Implement CSV reading/writing
 require 'csv'
 require_relative 'contact'
+
 class ContactsDatabase
 
 	def self.load_contacts
@@ -11,8 +12,8 @@ class ContactsDatabase
 		CSV.open("contacts.csv", 'w') do |table|
 			contacts.each do |contact|
            table << [contact.name, contact.email, contact.phone_numbers]
-
       end
     end
 	end
+
 end

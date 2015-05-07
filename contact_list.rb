@@ -1,7 +1,6 @@
 require_relative 'contact'
 require_relative 'contact_database'
 
-
 class ContactList
 	@@list_initialized = false
   @@contacts = []
@@ -15,8 +14,11 @@ class ContactList
     else 
     	#puts "list already initialized"
     end
+
   end
+
   class << self
+
 	  def add(contact)
 	  	@@contacts << contact
 	  	save
@@ -39,5 +41,7 @@ class ContactList
 	  def clear
 	  	@@contacts = []
 	  end
+
 	end
+	
 end
