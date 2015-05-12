@@ -1,25 +1,41 @@
 require_relative 'contact_list'
+require 'pg'
+
+
 class Contact
+
+    # CONN = PG::Connection.new({
+    #   host: 'localhost',
+    #   user: 'postgres',
+    #   password: 'me',
+    #   dbname: 'contacts'
+    # })
+
+  #heroku database credentials
+  CONN = PG::Connection.new({
+      host: 'ec2-50-19-233-111.compute-1.amazonaws.com',
+      user: 'gqbdunvbatpemj',
+      password: 'FhOIq_g6dCwkjNGiAurFw5z1uN',
+      dbname: 'd3uv8jjk4945el'
+    })
  
   attr_accessor :name, :email, :phone_numbers
-  @@count = 0
 
   def initialize(args)
-    @@count += 1
-    @id = @@count
-    @name = args.shift
-    @email = args.shift
-    @phone_numbers = ""
-    @phone_numbers = args.shift if !args.empty?
-    ContactList.new
+    @id = args[:id] || nil
+    puts @id.inspect
+    @firstname = args[:firstname]
+    @lastname = args[:lastname]
+    @email = args[:lastname]
+    @phone_numbers = args[:numbers] || ""
   end
  
   def to_s
     if !@phone_numbers.empty? 
       #chomp to remove last comma off list of phone numbers
-      "#{@id} :  #{@name} (#{@email})  #{@phone_numbers}".chomp(", ") 
+      "#{@id} :  #{@firstname} #{@lastname} (#{@email})  #{@phone_numbers}".chomp(", ") 
     else
-      "#{@id} :  #{@name} (#{@email})"
+      "#{@id} :  #{@firstname} #{@lastname} (#{@email})"
     end
   end
 
@@ -27,32 +43,31 @@ class Contact
       @phone_numbers << args
       ContactList.update(@id-1, @phone_numbers)
   end
+    #helper methods
+        #Contact database methods
+  def save
+    if is_new?
+      result = CONN.exec_params('INSERT INTO contacts (firstname, lastname) VALUES ($1, $2, $3) returning id', 
+                                [@firstname, @lastname, @email])
+      @id = result[0]['id']
+    else
+      CONN.exec_params('UPDATE contacts SET firstname = $1, lastname = $2 WHERE id = $3', 
+                        [@firstname, @lastname, @id])
+    end
+  end
+
+  def destroy
+    CONN.exec_params('DELETE FROM contacts WHERE id = $1', [@id])
+  end
+
+    private
+
+    def is_new?
+      @id.nil?
+    end
  
   ## Class Methods
   class << self
-    
-    def check_new_contact?(new_info)
-      if !new_info[1].include?("@") || !new_info[1].include?(".") #checks email
-        puts "Invalid Email" 
-        return nil
-      end 
-      ContactList.contacts.each do |contact|  #checks for duplicated emails
-        if contact.include?(new_info[1])
-          puts "duplicate contact"
-          return nil 
-        end
-      end
-      true
-    end
-
-    def create(args)
-      # TODO: Will initialize a contact as well as add it to the list of contacts
-      #if check_new_contact?(args)
-        john_doe = Contact.new(args)
-        ContactList.add(john_doe)
-        return ContactList.contacts.length #returns the last id added
-      #end
-    end
 
     def help
       puts open("help.txt", 'r').readlines
@@ -60,11 +75,6 @@ class Contact
 
     def find_index(index)
       ContactList.contacts[index.to_i - 1]
-    end
- 
-    def find(index)
-      #Will find and return the contacts soft matching the query
-      ContactList.contacts.select { |contact| contact.to_s.include?(index) }.each { |contact| puts contact.to_s }
     end
  
     def all
@@ -75,6 +85,22 @@ class Contact
     def show(id)
       # TODO: Show a contact, based on ID
       puts ContactList.contacts[id - 1].to_s # [-1] bc started counting at 1
+    end
+
+    def find(id)
+      result = nil
+      contact = CONN.exec_params('SELECT id, firstname, lastname, email FROM contacts WHERE id = $1', [id])[0]
+      result = Contact.new(firstname: contact['firstname'], lastname: contact['lastname'], email: contact['email'], id: contact['id'])
+      result
+    end
+
+    def find_all_by_lastname(name)
+    end
+
+    def find_all_by_firstname(name)
+    end
+
+    def find_by_email(email)
     end
 
     def close
