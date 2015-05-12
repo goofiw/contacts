@@ -47,13 +47,17 @@ class Contact
         #Contact database methods
   def save
     if is_new?
-      result = CONN.exec_params('INSERT INTO contacts (firstname, lastname) VALUES ($1, $2, $3) returning id', 
+      result = CONN.exec_params('INSERT INTO contacts (firstname, lastname, email) VALUES ($1, $2, $3) returning id', 
                                 [@firstname, @lastname, @email])
       @id = result[0]['id']
     else
       CONN.exec_params('UPDATE contacts SET firstname = $1, lastname = $2 WHERE id = $3', 
                         [@firstname, @lastname, @id])
     end
+  end
+
+  def update(args)
+    instance_variable_set("@#{args[:column]}", args[:set])
   end
 
   def destroy
@@ -73,42 +77,39 @@ class Contact
       puts open("help.txt", 'r').readlines
     end
 
-    def find_index(index)
-      ContactList.contacts[index.to_i - 1]
+    def find(id)
+      find_by("id", id).nil? ? nil : find_by("id", id)[0]
     end
- 
-    def all
-      # TODO: Return the list of contacts, as is
-      ContactList.contacts.each { |contact| puts contact.to_s }
+
+    def update(args)
+      args[:instance].instance_variable_set("@#{args[:column]}", args[:set])
+      args[:instance]
     end
     
-    def show(id)
-      # TODO: Show a contact, based on ID
-      puts ContactList.contacts[id - 1].to_s # [-1] bc started counting at 1
+    #private
+
+    def find_by(column, query)
+      results = []
+      contact = CONN.exec_params("SELECT id, firstname, lastname, email FROM contacts WHERE #{column} = $1", 
+                                 [query]).each do |contact|
+        results << Contact.new(firstname: contact['firstname'], 
+                              lastname: contact['lastname'], 
+                              email: contact['email'], 
+                              id: contact['id'])
+      end
+      results == [] ? nil : results
     end
 
-    def find(id)
-      result = nil
-      contact = CONN.exec_params('SELECT id, firstname, lastname, email FROM contacts WHERE id = $1', [id])[0]
-      result = Contact.new(firstname: contact['firstname'], lastname: contact['lastname'], email: contact['email'], id: contact['id'])
-      result
+    def find_all_by_lastname(lastname)
+      find_by("lastname", lastname)
     end
 
-    def find_all_by_lastname(name)
-    end
-
-    def find_all_by_firstname(name)
+    def find_all_by_firstname(firstname)
+      find_by("firstname", firstname)
     end
 
     def find_by_email(email)
-    end
-
-    def close
-      ContactList.close
-    end
-    # helper method for rspec
-    def clear
-      ContactList.clear
+      find_by("email", email).nil? ? nil : find_by("email", email)[0]
     end
  
   end
