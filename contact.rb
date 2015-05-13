@@ -1,4 +1,3 @@
-require_relative 'contact_list'
 require 'pg'
 
 
@@ -80,7 +79,7 @@ class Contact
     def find(id)
       find_by("id", id).nil? ? nil : find_by("id", id)[0]
     end
-
+    #args accepts a :contact, :column, :
     def update(args)
       args[:instance].instance_variable_set("@#{args[:column]}", args[:set])
       args[:instance]
@@ -97,7 +96,7 @@ class Contact
                               email: contact['email'], 
                               id: contact['id'])
       end
-      results == [] ? nil : results
+      results.empty? ? nil : results
     end
 
     def find_all_by_lastname(lastname)
