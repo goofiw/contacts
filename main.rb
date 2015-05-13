@@ -1,4 +1,5 @@
 require_relative 'contact'
+require_relative 'number'
 
 class InvalidID < StandardError
 end
@@ -10,7 +11,7 @@ def get_new_contact_info
   lastname = STDIN.gets.chomp
   puts "enter your email"
   email = STDIN.gets.chomp
-  return { firstname: firstname, lastname: lastname, email: email }
+  { firstname: firstname, lastname: lastname, email: email }
 end
 
 def get_update_params
@@ -22,16 +23,16 @@ def get_update_params
   column = STDIN.gets.chomp
   puts "and set it to what"
   set = STDIN.gets.chomp
-  return { instance: contact, column: column, set: set }
+  { instance: contact, column: column, set: set }
 end
 
 
 def get_phone_number
 	puts "enter the number type"
-	type = STDIN.gets.chomp
+	num_type = STDIN.gets.chomp
 	puts "enter the number"
-	number = STDIN.gets.chomp
-  "#{type}: #{number} "
+	num = STDIN.gets.chomp
+  { numtype: num_type, num: num }
 end
 
 # Object#send converst the first argument to a method and subsequent elements to arguments
@@ -52,8 +53,12 @@ elsif ARGV[0] == "first_name"
   puts Contact.find_all_by_firstname(ARGV[1])
 elsif ARGV[0] == "email"
   puts Contact.find_by_email(ARGV[1])
+elsif ARGV[0] == "add_num"
+  Number.new(get_phone_number.merge({ contact_id: ARGV[1] })).save
+elsif ARGV[0] == "get_numbers"
+  puts Number.get_nums(ARGV[1])
 else
-	nil
+	Contact.help
 end
   
 

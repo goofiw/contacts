@@ -7,3 +7,5 @@ Here is a list of available commands:
     last_name - returns an array of contacts with the specified lastname
     first_name - returns an array of contacts with the specified firstname
     email - returns the contact with the specified email
+    update - Begins a REPL for changing a contact item
+    add_num - Begins a REPL for adding numbers to specified contact_id

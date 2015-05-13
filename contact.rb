@@ -25,29 +25,19 @@ class Contact
     puts @id.inspect
     @firstname = args[:firstname]
     @lastname = args[:lastname]
-    @email = args[:lastname]
+    @email = args[:email]
   end
  
   def to_s
-    if !@phone_numbers.empty? 
-      #chomp to remove last comma off list of phone numbers
-      "#{@id} :  #{@firstname} #{@lastname} (#{@email})  #{@phone_numbers}".chomp(", ") 
-    else
       "#{@id} :  #{@firstname} #{@lastname} (#{@email})"
-    end
-  end
-
-  def add_num(args)
-      @phone_numbers << args
-      ContactList.update(@id-1, @phone_numbers)
   end
     #helper methods
         #Contact database methods
   def save
     if is_new?
-      result = CONN.exec_params('INSERT INTO contacts (firstname, lastname, email) VALUES ($1, $2, $3) returning id', 
+      result = CONN.exec_params('INSERT INTO contacts (firstname, lastname, email) VALUES ($1, $2, $3) returning contact_id', 
                                 [@firstname, @lastname, @email])
-      @id = result[0]['id']
+      @id = result[0]['contact_id']
     else
       CONN.exec_params('UPDATE contacts SET firstname = $1, lastname = $2 WHERE id = $3', 
                         [@firstname, @lastname, @id])
@@ -76,7 +66,7 @@ class Contact
     end
 
     def find(id)
-      find_by("id", id).nil? ? nil : find_by("id", id)[0]
+      find_by("contact_id", id).nil? ? nil : find_by("contact_id", id)[0]
     end
     #args accepts a :instance of contact, :column for column to update, :set for new assignment
     def update(args)
@@ -88,12 +78,12 @@ class Contact
 
     def find_by(column, query)
       results = []
-      contact = CONN.exec_params("SELECT id, firstname, lastname, email FROM contacts WHERE #{column} = $1", 
+      contact = CONN.exec_params("SELECT contact_id, firstname, lastname, email FROM contacts WHERE #{column} = $1", 
                                  [query]).each do |contact|
         results << Contact.new(firstname: contact['firstname'], 
                               lastname: contact['lastname'], 
                               email: contact['email'], 
-                              id: contact['id'])
+                              id: contact['contact_id'])
       end
       results.empty? ? nil : results
     end
