@@ -18,7 +18,7 @@ class Contact
       dbname: 'd3uv8jjk4945el'
     })
  
-  attr_accessor :name, :email, :phone_numbers
+  attr_accessor :name, :email
 
   def initialize(args)
     @id = args[:id] || nil
@@ -26,7 +26,6 @@ class Contact
     @firstname = args[:firstname]
     @lastname = args[:lastname]
     @email = args[:lastname]
-    @phone_numbers = args[:numbers] || ""
   end
  
   def to_s
@@ -79,7 +78,7 @@ class Contact
     def find(id)
       find_by("id", id).nil? ? nil : find_by("id", id)[0]
     end
-    #args accepts a :contact, :column, :
+    #args accepts a :instance of contact, :column for column to update, :set for new assignment
     def update(args)
       args[:instance].instance_variable_set("@#{args[:column]}", args[:set])
       args[:instance]
